@@ -5,7 +5,8 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 VERIFY_TOKEN = "MY_SECRET_VERIFY_TOKEN"
-ACCESS_TOKEN = "EAAYuZCFMPNjgBSLbc8z7nw4f0AstmzgQ9pVFeIaMAoO8mX019NDZANm4eTHpPljWTHSvX7ABa6seFS3JOtI76xTBpSgZBnuCWIoPrLXU29gmunFvL2aGGWSWJZAK5DwdRZAEapeecJWTqP0mxlsAJo5khZCawPPE0FqvxKMcQok9EkGN6WbWnyEJamZBu2ZCdsVtcID8am0vDc0aFNYp4ntZBwSDmnPGP3xeBoUCyIrRpzOSsgKvJ5fJ414ZC7yIwBecnCJZAhbWmVvrPBS2HTnqSKmCLF0eCXCdx0ZD"
+# ضع رمز Access Token الجديد بين التنصيص
+ACCESS_TOKEN = "EAAYuZCFMPNjgBSLbc8z7nw4f0AstmzgQ9pVFeIaMAoO8mX019NDZANm4eTHpPljWTHSvX7ABa6seFS3JOtI76xTBpSgZBnuCWIoPrLXU29gmunFvL2aGGWSWJZAK5DwdRZAEapeecJWTqP0mxlsAJo5khZCawPPE0FqvxKMcQok9EkGN6WbWnyEJamZBu2ZCdsVtcID8am0vDc0aFNYp4ntZBwSDmnPGP3xeBoUCyIrRpzOSsgKvJ5fJ414ZC7yIwBecnCJZAhbWmVvrPBS2HTnqSKmCLF0eCXCdx0ZD" 
 PHONE_NUMBER_ID = "1147611041778282"
 
 LOCATION_LINK = "https://maps.google.com/?q=24.7136,46.6753"
@@ -28,21 +29,24 @@ def verify_webhook():
 def handle_messages():
     data = request.get_json()
     try:
-        entry = data["entry"][0]
-        changes = entry["changes"][0]
-        value = changes["value"]
+        entry = data.get("entry", [])[0]
+        changes = entry.get("changes", [])[0]
+        value = changes.get("value", {})
         
         if "messages" in value:
-            message = value["messages"][0]
-            from_number = message["from"]
-            send_whatsapp_message(from_number, HOUSE_DETAILS)
+            messages = value.get("messages", [])
+            if messages:
+                message = messages[0]
+                from_number = message.get("from")
+                print(f"وصلت رسالة من: {from_number}")
+                send_whatsapp_message(from_number, HOUSE_DETAILS)
     except Exception as e:
         print(f"Error handling message: {e}")
 
     return jsonify({"status": "success"}), 200
 
 def send_whatsapp_message(recipient, text):
-    url = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/v20.0/{PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
@@ -53,7 +57,11 @@ def send_whatsapp_message(recipient, text):
         "type": "text",
         "text": {"body": text}
     }
-    requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers)
+    
+    # هذه السطور ستطبع لنا في Render سبب الرفض بالضبط
+    print(f"كود الاستجابة: {response.status_code}")
+    print(f"تفاصيل الرد من ميتا: {response.text}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
