@@ -4,11 +4,11 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-VERIFY_TOKEN = "MY_SECRET_VERIFY_TOKEN"  # رمز تحكم نختاره للربط مع ميتا
-ACCESS_TOKEN = "EAAYuZCFMPNjgBSLbc8z7nw4f0AstmzgQ9pVFeIaMAoO8mX019NDZANm4eTHpPljWTHSvX7ABa6seFS3JOtI76xTBpSgZBnuCWIoPrLXU29gmunFvL2aGGWSWJZAK5DwdRZAEapeecJWTqP0mxlsAJo5khZCawPPE0FqvxKMcQok9EkGN6WbWnyEJamZBu2ZCdsVtcID8am0vDc0aFNYp4ntZBwSDmnPGP3xeBoUCyIrRpzOSsgKvJ5fJ414ZC7yIwBecnCJZAhbWmVvrPBS2HTnqSKmCLF0eCXCdx0ZD"   
-PHONE_NUMBER_ID = "1147611041778282"  # معرف الرقم التجريبي
+VERIFY_TOKEN = "MY_SECRET_VERIFY_TOKEN"
+ACCESS_TOKEN = "ضع_هنا_Access_Token_الجديد"
+PHONE_NUMBER_ID = "1147611041778282"
 
-LOCATION_LINK = "https://maps.google.com/?q=24.7136,46.6753"  # ضع رابط موقع المنزل هنا
+LOCATION_LINK = "https://maps.google.com/?q=24.7136,46.6753"
 HOUSE_DETAILS = "مرحباً بك! تفاصيل الموقع كالتالي:\n- العنوان: الرياض\n- رابط الموقع: " + LOCATION_LINK
 
 @app.route("/webhook", methods=["GET"])
@@ -42,7 +42,7 @@ def handle_messages():
     return jsonify({"status": "success"}), 200
 
 def send_whatsapp_message(recipient, text):
-   url = f"https://graph.facebook.com/v25.0/{PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
