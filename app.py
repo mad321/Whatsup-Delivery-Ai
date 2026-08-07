@@ -42,7 +42,7 @@ def handle_messages():
     return jsonify({"status": "success"}), 200
 
 def send_whatsapp_message(recipient, text):
-    url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
+    url = f"https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
